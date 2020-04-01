@@ -1,0 +1,15 @@
+09c6ca69188ab8a11b7c637d6346724c *DESCRIPTION
+d6d4cf00750b28a818e67cb79d8778c3 *NAMESPACE
+09c44622f939ac6c7e63a800651171e0 *R/aziztest_description.R
+1f21c6f29264ef9b1bb6e80a82a43374 *R/main.R
+c44b8f623e7905e0c8197f4a46308ce5 *R/post_analysis.R
+d3a5b9725aadb5ae57320f0792aad652 *R/standardization_functions.R
+99d010f48bb57626e09e096e5aa8edea *inst/CITATION
+e321749cde6b95c81cea08937c8795b7 *man/aziz.test.Rd
+b270ba5cf4f76722fa8d9bae2f54fe4e *man/aziztest.Rd
+cc4365c0fd65383ec9b2b7cd97dabd34 *man/calibrate_test.Rd
+4b7ee487369781e1bccfdec89a1a791c *man/get_calibrated_pvalues.Rd
+a73d72ee09a7ca4ee89d7e19f68004a0 *man/print_details.Rd
+08d281d96e403f484f7561ccf195f8ab *man/print_summary.Rd
+36828e5b6ef6b8614fd666bc5f714328 *man/reformat_results.Rd
+32716c1d87b224089e3fa11deb5f02b6 *man/which_aberrant.Rd
