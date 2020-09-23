@@ -40,11 +40,12 @@ print_details=function(x){
 #' @seealso \code{\link{print_details}} for more info
 #' @export
 print_summary=function(x){
+  pvalprint=as.character(x$pval); if (x$pval< 1/length(x$perm))pvalprint="< 1/#permutations"
   print(paste("Score:",format(x$es,digits=3),"; direction:",x$direction,
-              "; r:",format(x$oddcas,digits=3),"; pval:",x$pval))
+              "; r:",format(x$oddcas,digits=3),"; pval:",pvalprint))
 }
 
-#' Return original value corresponding to max ES
+# -Return original value corresponding to max ES
 #'
 #' Return original value corresponding to max ES
 #'
@@ -54,9 +55,10 @@ aberrant_expression=function(finalexpri,di,esmi){
   return(finalexpri[order(finalexpri,decreasing = T)[esmi]])
 }
 
-#' Returns which samples are in the aberrant interval
+# -Returns which samples are in the aberrant interval
 #'
 #' Returns index of samples that are in the aberrant interval
+#'
 #' @noRd
 which_aberrant_internal=function(finalexprj,finalexpri,di,esmi){
   ipoint = aberrant_expression(finalexpri,di,esmi)
@@ -79,7 +81,7 @@ which_aberrant_internal=function(finalexprj,finalexpri,di,esmi){
 #' x = rnorm(400)
 #' #Inducing an aberration enrichment signal by perturbing some of the cases
 #' x[1:20]=x[1:20]-3;
-#' res2 = aziz.test(y,x,rep=100)
+#' res2 = aziz.test(y,x,rep=20000)
 #' print_summary(res2)
 #' which_aberrant(x,x,res2)
 #' which_aberrant(c(-5,1.5,-2.5,-0.5,2),x,res2)#testing if new values are within the aberrant interval
@@ -91,6 +93,7 @@ which_aberrant=function(xi,x,res){
 #' Polynomial prediction of the mapping from test statistic to p-value
 #'
 #' Used to predict p-values for associations that received a zero p-value from permutations.
+#' Works on pvalues under the inverse of the number of permutations.
 #' @importFrom stats lm
 #' @importFrom stats predict
 #' @noRd

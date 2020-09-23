@@ -10,11 +10,11 @@
 #'   For example, in a clinical trial setting our test can be used to assess
 #'   treatment efficacy in a context of heterogeneous treatment effect, where
 #'   the drug works well on only some of the patients.
-#'   Another usage example is in -omics data where a relevant gene's dysregulation is
+#'   Another usage example is in -Omics data where a relevant gene's dysregulation is
 #'   present in only some of the disease cases.
 #'
 #' The main function is the \code{aziz.test()} function used to test for
-#' heteregeneous associations/ aberration enrichment.
+#' heterogeneous associations/ aberration enrichment.
 #'
 #' @section aziztest extra functions:
 #' If you are testing multiple variables at once (such as all genes in a gene expression dataset),

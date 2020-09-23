@@ -4,13 +4,16 @@
 \alias{get_calibrated_pvalues}
 \title{Use the calibration of pvalues in a slow multi-hypothesis setting}
 \usage{
-get_calibrated_pvalues(calibration, es1)
+get_calibrated_pvalues(calibration, es1, zeropvalues = T)
 }
 \arguments{
 \item{calibration}{Output of function \code{calibrate_test()}}
 
 \item{es1}{Max Enrichment score given by function \code{aziz.test()} $es.
 A vector containing the max enrichment scores from many variables is acceptable}
+
+\item{zeropvalues}{Default=TRUE. Allows for pvalues under the inverse of the number
+of permutations to be zero. Otherwise, 1/ (1+ #permutations) is the returned value.}
 }
 \value{
 calibrated pvalue(s) corresponding to the max enrichment score(s) given
@@ -18,15 +21,18 @@ calibrated pvalue(s) corresponding to the max enrichment score(s) given
 \description{
 Compute the pvalues from a single set of permutations obtained from \code{calibrate_test}.
 Useful if testing a large number of variables at once since it allows
-  running permutations only once behorehand rather than for every variable.
+  running permutations only once beforehand rather than for every variable.
   Used in conjunction with "\code{calibrate_test}"
 }
 \examples{
 y = c(rep(1,200),rep(0,200))
 x = rnorm(400)
-calibration = calibrate_test(y,rep=100)
+calibration = calibrate_test(y,rep=1000)
 es = aziz.test(y,x,rep=0)$es #No need for permutations, pvalues computed from calibration
 get_calibrated_pvalues(calibration,es)
+x[1:20]=x[1:20]-2;
+es2 = aziz.test(y,x,rep=0)$es
+get_calibrated_pvalues(calibration,es2)
 }
 \seealso{
 \code{\link{calibrate_test}}, \code{\link{aziz.test}}
