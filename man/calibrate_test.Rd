@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{calibrate_test}
 \alias{calibrate_test}
-\title{Calibration of pvalues in a slow multi-hypothesis setting}
+\title{Calibration of p-values in a slow multi-hypothesis setting}
 \usage{
 calibrate_test(
   y,
@@ -65,7 +65,7 @@ Useful if testing a large number of variables at once since it allows
 y = c(rep(1,200),rep(0,200))
 x = rnorm(400)
 calibration = calibrate_test(y,rep=100)
-es = aziz.test(y,x,rep=0)$es #No need for permutations, pvalues computed from calibration
+es = aziz.test(y,x,rep=0)$es #No need for permutations, p-values computed from calibration
 get_calibrated_pvalues(calibration,es)
 
 }

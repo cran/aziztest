@@ -2,9 +2,9 @@
 % Please edit documentation in R/main.R
 \name{get_calibrated_pvalues}
 \alias{get_calibrated_pvalues}
-\title{Use the calibration of pvalues in a slow multi-hypothesis setting}
+\title{Use the calibration of p-values in a slow multi-hypothesis setting}
 \usage{
-get_calibrated_pvalues(calibration, es1, zeropvalues = T)
+get_calibrated_pvalues(calibration, es1, conservative = T)
 }
 \arguments{
 \item{calibration}{Output of function \code{calibrate_test()}}
@@ -12,14 +12,14 @@ get_calibrated_pvalues(calibration, es1, zeropvalues = T)
 \item{es1}{Max Enrichment score given by function \code{aziz.test()} $es.
 A vector containing the max enrichment scores from many variables is acceptable}
 
-\item{zeropvalues}{Default=TRUE. Allows for pvalues under the inverse of the number
-of permutations to be zero. Otherwise, 1/ (1+ #permutations) is the returned value.}
+\item{conservative}{Default=TRUE. p-values = b+1/ (1+ #permutations) is the returned value.
+As described in Phibson 2010: "Permutation p-values should never be zero"}
 }
 \value{
-calibrated pvalue(s) corresponding to the max enrichment score(s) given
+calibrated p-value(s) corresponding to the max enrichment score(s) given
 }
 \description{
-Compute the pvalues from a single set of permutations obtained from \code{calibrate_test}.
+Compute the p-values from a single set of permutations obtained from \code{calibrate_test}.
 Useful if testing a large number of variables at once since it allows
   running permutations only once beforehand rather than for every variable.
   Used in conjunction with "\code{calibrate_test}"
@@ -28,7 +28,7 @@ Useful if testing a large number of variables at once since it allows
 y = c(rep(1,200),rep(0,200))
 x = rnorm(400)
 calibration = calibrate_test(y,rep=1000)
-es = aziz.test(y,x,rep=0)$es #No need for permutations, pvalues computed from calibration
+es = aziz.test(y,x,rep=0)$es #No need for permutations, p-values computed from calibration
 get_calibrated_pvalues(calibration,es)
 x[1:20]=x[1:20]-2;
 es2 = aziz.test(y,x,rep=0)$es

@@ -13,7 +13,7 @@
 #   Check Package:             'Cmd + Shift + E'
 #   Test Package:              'Cmd + Shift + T'
 
-#' Calibration of pvalues in a slow multi-hypothesis setting
+#' Calibration of p-values in a slow multi-hypothesis setting
 #'
 #' Compute the null distribution of test statistics on one gaussian variable.
 #' Useful if testing a large number of variables at once since it allows
@@ -28,7 +28,7 @@
 #' y = c(rep(1,200),rep(0,200))
 #' x = rnorm(400)
 #' calibration = calibrate_test(y,rep=100)
-#' es = aziz.test(y,x,rep=0)$es #No need for permutations, pvalues computed from calibration
+#' es = aziz.test(y,x,rep=0)$es #No need for permutations, p-values computed from calibration
 #' get_calibrated_pvalues(calibration,es)
 #'
 #' @export
@@ -39,9 +39,9 @@ calibrate_test = function(y,w=NULL,rep=10000000,doall=TRUE,unidirectional=0,flat
   return(sort(res_m$perm));
 }
 
-#' Use the calibration of pvalues in a slow multi-hypothesis setting
+#' Use the calibration of p-values in a slow multi-hypothesis setting
 #'
-#' Compute the pvalues from a single set of permutations obtained from \code{calibrate_test}.
+#' Compute the p-values from a single set of permutations obtained from \code{calibrate_test}.
 #' Useful if testing a large number of variables at once since it allows
 #'   running permutations only once beforehand rather than for every variable.
 #'   Used in conjunction with "\code{calibrate_test}"
@@ -49,23 +49,24 @@ calibrate_test = function(y,w=NULL,rep=10000000,doall=TRUE,unidirectional=0,flat
 #' @param calibration Output of function \code{calibrate_test()}
 #' @param es1 Max Enrichment score given by function \code{aziz.test()} $es.
 #'   A vector containing the max enrichment scores from many variables is acceptable
-#' @param zeropvalues Default=TRUE. Allows for pvalues under the inverse of the number
-#' of permutations to be zero. Otherwise, 1/ (1+ #permutations) is the returned value.
-#' @return calibrated pvalue(s) corresponding to the max enrichment score(s) given
+#' @param conservative Default=TRUE. p-values = b+1/ (1+ #permutations) is the returned value.
+#'   As described in Phibson 2010: "Permutation p-values should never be zero"
+#' @return calibrated p-value(s) corresponding to the max enrichment score(s) given
 #' @examples
 #' y = c(rep(1,200),rep(0,200))
 #' x = rnorm(400)
 #' calibration = calibrate_test(y,rep=1000)
-#' es = aziz.test(y,x,rep=0)$es #No need for permutations, pvalues computed from calibration
+#' es = aziz.test(y,x,rep=0)$es #No need for permutations, p-values computed from calibration
 #' get_calibrated_pvalues(calibration,es)
 #' x[1:20]=x[1:20]-2;
 #' es2 = aziz.test(y,x,rep=0)$es
 #' get_calibrated_pvalues(calibration,es2)
 #' @seealso \code{\link{calibrate_test}}, \code{\link{aziz.test}}
 #' @export
-get_calibrated_pvalues = function(calibration,es1,zeropvalues=T){
+get_calibrated_pvalues = function(calibration,es1,conservative=T){
   pvs=1- findInterval(es1,calibration)/length(calibration);
-  pvszero=which(pvs==0);if (length(pvszero) & !zeropvalues)pvs[pvszero]= 1/(1+length(calibration));
+  #pvszero=which(pvs==0);if (length(pvszero) & !zeropvalues)pvs[pvszero]= 1/(1+length(calibration));
+  if (conservative)pvs= (pvs*length(calibration) +1)/(length(calibration) +1)
   return(pvs)
   #return(1- findInterval(es1,calibration,left.open=TRUE)/length(calibration)); #Might be better but does not work on hpf
 }
@@ -78,7 +79,7 @@ get_calibrated_pvalues = function(calibration,es1,zeropvalues=T){
 #'   of numeric measurements (\code{x}) to be tested for association with case/control status.
 #'   For example, in a clinical trial setting \code{y} can indicate individuals
 #'   on a drug vs placebo and \code{x} can be a change in disease severity measurement
-#'   from baseline. This test will return a pvalue indicating drug efficacy and is more
+#'   from baseline. This test will return a p-value indicating drug efficacy and is more
 #'   powerful than other test in a heterogeneous effects setting.
 #'   Another usage example is in -Omics data where \code{y} would indicate
 #'   disease vs healthy control and \code{x} could be a gene's expression vector across samples.
@@ -91,7 +92,7 @@ get_calibrated_pvalues = function(calibration,es1,zeropvalues=T){
 #'   giving larger weights to aberrations of larger magnitude.
 #' @param rep Default=100000. Number of permutations to be used to calculate p-values.
 #' @param doall Default=FALSE. Logical. If TRUE all \code{rep} permutations are performed.
-#'   If FALSE only enough permutations are performed to get accurate pvalues.
+#'   If FALSE only enough permutations are performed to get accurate p-values.
 #'   Variable that are clearly not associated need only a 100 permutations.
 #' @param eps Default = 0.000000001. Small numeric value. Standard deviation of
 #'   the gaussian node added to x before ordering samples. In the case of equalities,
@@ -115,12 +116,12 @@ get_calibrated_pvalues = function(calibration,es1,zeropvalues=T){
 #'   remove the associations that would usually be picked by a Levene test.
 #'   Consider using this when using unidirectional testing if variance changes between
 #'   groups are irrelevant in your considered problem. Results in loss of power.
-#' @param zeropvalues Default=TRUE. Allows for pvalues under the inverse of the number
-#' of permutations to be zero. Otherwise, 1/ (1+ #permutations) is the returned value.
+#' @param conservative Default=TRUE. p-values = b+1/ (1+ #permutations) is the returned value.
+#'   As described in Phibson 2010: "Permutation p-values should never be zero"
 #' @return A result object with the following fields: (for clarity use \code{\link{print_summary}})
 #' \describe{
 #' \item{es}{Max enrichment score.}
-#' \item{pval}{Permutation pvalue, if permutations were performed.}
+#' \item{pval}{Permutation p-value, if permutations were performed.}
 #' \item{oddcas}{Proportion of cases in the aberrant interval driving the max enrichment score.
 #'   This is described as the proportion r in the main paper.}
 #' \item{direction}{direction of the effect. 1: cases<controls, 2: cases>controls.}
@@ -140,7 +141,7 @@ get_calibrated_pvalues = function(calibration,es1,zeropvalues=T){
 #' y = c(rep(1,200),rep(0,200))
 #' x = rnorm(400)
 #'
-#' res = aziz.test(y,x,rep=100) #run 100 permutations to calculate pvalue
+#' res = aziz.test(y,x,rep=100) #run 100 permutations to calculate p-value
 #' print_summary(res)
 #'
 #' #Inducing an aberration enrichment signal by perturbing some of the cases
@@ -149,7 +150,7 @@ get_calibrated_pvalues = function(calibration,es1,zeropvalues=T){
 #' print_summary(res2)
 #' @export
 aziz.test=function(y,x,w=NULL,rep=100000,doall=FALSE,eps=0.000000001,
-                   unidirectional=0,flatten=0.5,ignoremax=0,normmethod=1,novariance=F,zeropvalues=T){
+                   unidirectional=0,flatten=0.5,ignoremax=0,normmethod=1,novariance=F,conservative=T){
   checked=T;
   if (length(y)<20 | length(x)<20) {print("Error : Sample size too smalll"); checked=F; }
   if (checked & length(y)!=length(x)) {print("Error : x and y should be of the same size"); checked=F; }
@@ -166,7 +167,7 @@ aziz.test=function(y,x,w=NULL,rep=100000,doall=FALSE,eps=0.000000001,
   if (checked) {
     res=aziz.test.main(y,x,w=w,rep=rep,doall=doall,eps=eps,
                        unidirectional=unidirectional,flatten=flatten,ignoremax=ignoremax,
-                       normmethod=normmethod,novariance = novariance,zeropvalues=zeropvalues)
+                       normmethod=normmethod,novariance = novariance,conservative=conservative)
   }
   return(res)
 }
@@ -180,7 +181,7 @@ aziz.test=function(y,x,w=NULL,rep=100000,doall=FALSE,eps=0.000000001,
 #'
 #' @noRd
 aziz.test.main=function(pheno,pred,w=NULL,rep=100000,doall=FALSE,eps=0.000000001,unidirectional=0,flatten=0.5,
-                   ignoremax=0,approx=1,weighting=TRUE,trimmed=0.75,normmethod=1,novariance = F,zeropvalues=T){# negative pred are used as weights by default
+                   ignoremax=0,approx=1,weighting=TRUE,trimmed=0.75,normmethod=1,novariance = F,conservative=T){# negative pred are used as weights by default
   prep = preprocess_weights(pheno,pred,w=w,eps=eps,weighting=weighting,flatten=flatten,normmethod=normmethod)
   ord  = prep$ord; signmult = prep$signmult; w = prep$w;
   esnorm    = generate_es_normalizer_generic(w[ord],pheno,approx,weighting=weighting);
@@ -209,7 +210,7 @@ aziz.test.main=function(pheno,pred,w=NULL,rep=100000,doall=FALSE,eps=0.000000001
   ncas = sum(pheno[ord][vip]); nctr = esind[direction]-ncas;
   ncastotal = sum(pheno); nctrtotal = length(pheno)-ncastotal;
   oddcas = ncas/ncastotal; oddctr = nctr/nctrtotal; oddratio = oddcas/oddctr;
-  if (!zeropvalues & esperm$pval==0)esperm$pval=1/(1+rep);#correct zero pvals
+  if (conservative)esperm$pval=(esperm$pval*rep+1)/(1+rep);
   return(list(es=esperm$real,esm=esm,esind=esind,pval=esperm$pval,direction=direction,escurve=escurve,
               vip=vip,perm=esperm$perm,ncas=ncas,oddratio=oddratio,oddcas=oddcas))
 }
